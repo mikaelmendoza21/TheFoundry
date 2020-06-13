@@ -1,0 +1,19 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ChiefOfTheFoundry.Models.MtgCard card = ViewBag.Card;
+}
+<div>
+    <div>
+        <div class="form-group">
+            <h1>@card.Name</h1>
+            <img src="@card.ImageUrl" />
+            <p>@card.Text</p>
+            <label for="numberOfCopies">Card Copies</label>
+            <input id="mtgCardId" name="mtgCardId" type="hidden" value="@card.Id" />
+            <input type="number" class="form-control" id="numberOfCopies" placeholder="Number of copies..">
+        </div>
+        <button id="addCardToCollection" type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</div>

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RetrofitterFoundry": {
+      "commandName": "Project",
+      "commandLineArgs": "1"
+    }
+  }
+}

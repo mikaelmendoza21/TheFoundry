@@ -1,0 +1,35 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ChiefOfTheFoundry.Models.MtgCard card = ViewBag.Card;
+    int quantityAdded = ViewBag.NumberOfCopies;
+}
+<div class="container">
+    <div class="row">
+        @if (quantityAdded == 1)
+        {
+            <h1>Your card was added to your Collection</h1>
+        }
+        else
+        {
+            <h1>Your cards have been added</h1>
+            <div class="col-lg-10">
+                <h2>@quantityAdded.ToString() copies created</h2>
+            </div>
+        }
+    </div>
+    <div>
+        <h2>@card.Name</h2>
+        <div class="col-lg-10">
+            <img src="@card.ImageUrl" />
+        </div>
+    </div>
+    <div>
+        <div id="row">
+            <a href="/searchToAdd">
+                <p>Add more cards</p>
+            </a>
+        </div>
+    </div>
+</div>

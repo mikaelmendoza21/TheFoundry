@@ -1,0 +1,14 @@
+.vagrant/
+ubuntu-bionic-18.04-cloudimg-console.log
+.vs/
+.obj/
+foundry/bin/
+foundry/obj/
+ChiefOfTheFoundry/bin/
+ChiefOfTheFoundry/obj/
+FoundryInspector/bin/
+FoundryInspector/obj/
+FoundryApi/bin/
+FoundryApi/obj/
+RetrofitterFoundry/bin/
+RetrofitterFoundry/obj/
