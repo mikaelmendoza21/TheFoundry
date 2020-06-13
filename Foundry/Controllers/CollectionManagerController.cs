@@ -52,7 +52,11 @@ namespace Foundry.Controllers
         public IActionResult GetCardCopiesInCollection(string metacardId)
         {
             MetaCard metaCard = _metaCardAccessor.GetMetaCardById(metacardId);
+
+            List<MtgCard> mtgCards = _cardManagerService.GetMtgCardsByMetacardId(metaCard.Id).OrderBy(c => c.SetID).ToList();
+
             ViewBag.Metacard = metaCard;
+            ViewBag.MtgCards = mtgCards;
 
             BaseViewModel model = new BaseViewModel(_configuration);
             return View(model);

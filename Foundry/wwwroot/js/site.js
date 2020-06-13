@@ -18,7 +18,7 @@ function searchMetacard(resultsContainerId) {
                 var html = "";
                 $.each(data, function (key, value) {
                     var cardName = encodeURIComponent(value.name);
-                    html += "<div><a href=\"/selectSet?metacardId=" + value.id + "&cardName=" + cardName + "\">" + value.name + "</a></div>";
+                    html += "<li><a href=\"/selectSet?metacardId=" + value.id + "&cardName=" + cardName + "\">" + value.name + "</a></li>";
                 });
                 $("#cardSearchResults").html("<div>" + html + "</div>");
             }

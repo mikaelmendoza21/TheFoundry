@@ -3,6 +3,7 @@
 *@
 @{
     ChiefOfTheFoundry.Models.MetaCard metaCard = ViewBag.Metacard;
+    List<ChiefOfTheFoundry.Models.MtgCard> mtgCards = ViewBag.MtgCards;
 }
 <div>
     <h1>Collection Manager</h1>
@@ -10,10 +11,22 @@
     <div class="container">
         <input id="metacardId" type="hidden" value="@metaCard.Id" />
         <div id="cardCopiesInCollection">
+            @foreach(ChiefOfTheFoundry.Models.MtgCard mtgCard in mtgCards)
+            {
+            <div data-set-id="@mtgCard.SetID" data-mtgcard-id="@mtgCard.Id" data-image-url="@mtgCard.ImageUrl" class="hidden col-lg-12 mtgCardGroup">
+                <div class="mtgImage col-md-8">
+                </div>
+                <div class="col-lg-12 mtgCardCount">
 
+                </div>
+                <ul class="hidden copiesContainer">
+                </ul>
+            </div>
+            }
         </div>
     </div>
 </div>
 <script>
     var currentPage = 'GetCardCopiesInCollection';
+
 </script>
