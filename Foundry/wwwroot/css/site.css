@@ -69,3 +69,23 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+.text-lg{
+    font-size: xx-large;
+}
+
+.text-md{
+    font-size: large;
+}
+
+.spaced{
+    margin: 10px 5px 10px 5px;
+}
+
+.pad-left{
+    padding-left: 10px;
+}
+
+.pad-right{
+    padding-right: 10px;
+}

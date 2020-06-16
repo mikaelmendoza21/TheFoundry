@@ -72,7 +72,7 @@ namespace FoundryApi.Api.Controllers
             }
             else
             {
-                return Json("[]");
+                return Json(new List<string>());
             }
         }
 
@@ -96,7 +96,7 @@ namespace FoundryApi.Api.Controllers
             }
             else
             {
-                return Json("[]");
+                return Json(new List<string>());
             }
         }
     }

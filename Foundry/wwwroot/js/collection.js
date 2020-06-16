@@ -5,18 +5,18 @@ $('#searchCardInCollection').click(function () {
 });
 
 function searchMetacardInCollection(resultsContainerId) {
-    var cardNameStartingWith = $('#cardNameInCollection').val();
+    var cardNameStartingWith = encodeURIComponent($('#cardNameInCollection').val());
 
     $.ajax({
         type: "GET",
         dataType: "json",
-        url: "/api/metacard/byNameStart?substring=" + cardNameStartingWith,
+        url: encodeURI("/api/metacard/byNameStart?substring=" + cardNameStartingWith),
         success: function (data) {
             if (data != null && data.length > 0) {
                 var html = "";
                 $.each(data, function (key, value) {
                     var cardName = encodeURIComponent(value.name);
-                    html += "<li><a href=\"/collection/copiesInCollection?metacardId=" + value.id + "\">" + value.name + "</a></li>";
+                    html += "<li class='spaced'><div><a class='text-md' href=\"/collection/copiesInCollection?metacardId=" + value.id + "\">" + value.name + "</a></div></li>";
                 });
                 $("#searchMetacardInCollectionResults").html("<div>" + html + "</div>");
             }
@@ -41,7 +41,7 @@ $(document).ready(function () {
                 if (data != null && data.length > 0) {
                     // Assumes cardCopies come sorted by MtgCardId
                     // Add MtgCards with found copies
-                    $("#cardCopiesInCollection").prepend("<div class='row'><h3>" + data.length + " total copies found</h3></div>");
+                    $("#cardCopiesInCollection").prepend("<div class='row spaced'><h3>" + data.length + " total copies found</h3></div>");
 
                     var currentMtgCardId = data[0].mtgCardId;
                     var currentMtgCardCount = 0;
@@ -55,7 +55,7 @@ $(document).ready(function () {
                             currentMtgCardCount = 0;
                             $currentCardGroup = $(".mtgCardGroup[data-mtgcard-id='" + currentMtgCardId + "']");
                         }
-                        $currentCardGroup.find(".copiesContainer").append("<li>" + value.id + "</li>");
+                        $currentCardGroup.find(".copiesContainer").append("<li class='row spaced'><div class='pad-right'>" + value.id + " - Deck: " + value.deckId + "   </div><input type='button' class='btn btn-secondary pad-left' data-cardConstruct-id='" + value.id +"' value='Delete'></input></li>");
                         currentMtgCardCount++;
 
                         if (i == (data.length - 1) || data[i + 1].mtgCardId != currentMtgCardId) {
@@ -63,8 +63,8 @@ $(document).ready(function () {
 
                             // Show image
                             var imageUrl = $currentCardGroup.attr("data-image-url");
-                            $currentCardGroup.find(".mtgImage").html("<img src='" + imageUrl + "' />");
-                            $currentCardGroup.find(".mtgCardCount").html("<h4><i>" + currentMtgCardCount + " copies </i></h4>");
+                            $currentCardGroup.find(".mtgImage").html("<img class='spaced' src='" + imageUrl + "' />");
+                            $currentCardGroup.find(".mtgCardCount").html("<h4 class='spaced'><i>" + currentMtgCardCount + " copies </i></h4>");
 
                             // Temp
                             $currentCardGroup.find(".copiesContainer").addClass("hidden");
@@ -75,7 +75,7 @@ $(document).ready(function () {
                     }
                 }
                 else {
-                    $("#cardCopiesInCollection").html("<h4>Card not found in your collection</h4>");
+                    $("#cardCopiesInCollection").prepend("<div class='spaced'><p class='text-md'>Card not found in your collection</p></div>");
                 }
             },
             error: function (xhr, status) {

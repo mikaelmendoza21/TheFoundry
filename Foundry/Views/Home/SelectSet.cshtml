@@ -7,15 +7,17 @@
     string cardName = ViewBag.CardName;
 }
 <div>
-    <h1>@cardName</h1>
-    <h3>Select your card's Set</h3>
+    <div class="spaced">
+        <h1>@cardName</h1>
+        <h3>Select your card's Set</h3>
+    </div>
     @foreach (ChiefOfTheFoundry.Models.MtgSet set in sets)
     {
-        <div class="row">
-            <div class="container">
-                <a href="reviewToAdd?metacardId=@metacardId&setId=@set.Id&cardName=@System.Web.HttpUtility.HtmlEncode(cardName)">
+        <div class="row spaced">
+            <div class="col-lg-10">
+                <a class="text-lg" href="reviewToAdd?metacardId=@metacardId&setId=@set.Id&cardName=@System.Web.HttpUtility.HtmlEncode(cardName)">
                     @set.Name
-                    <i class="ss ss-@set.Code.ToLower()"></i>
+                    <i class="text-lg ss ss-@set.Code.ToLower()"></i>
                 </a>
             </div>
         </div>

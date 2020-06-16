@@ -7,20 +7,20 @@
 $('#searchCardByName').click(searchMetacard);
 
 function searchMetacard(resultsContainerId) {
-    var cardNameStartingWith = $('#cardName').val();
+    var cardNameStartingWith = encodeURIComponent($('#cardName').val());
 
     $.ajax({
         type: "GET",
         dataType: "json",
-        url: "/api/metacard/byNameStart?substring=" + cardNameStartingWith,
+        url: encodeURI("/api/metacard/byNameStart?substring=" + cardNameStartingWith),
         success: function (data) {
             if (data != null && data.length > 0) {
                 var html = "";
                 $.each(data, function (key, value) {
                     var cardName = encodeURIComponent(value.name);
-                    html += "<li><a href=\"/selectSet?metacardId=" + value.id + "&cardName=" + cardName + "\">" + value.name + "</a></li>";
+                    html += "<li class='spaced'><div><a class='text-md' href=\"/selectSet?metacardId=" + value.id + "&cardName=" + cardName + "\">" + value.name + "</a></div></li>";
                 });
-                $("#cardSearchResults").html("<div>" + html + "</div>");
+                $("#cardSearchResults").html("<div class='spaced'>" + html + "</div>");
             }
             else {
                 $("#cardSearchResults").text("No results found");

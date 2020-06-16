@@ -14,7 +14,6 @@ using ChiefOfTheFoundry.Models.Inventory;
 
 namespace Foundry.Controllers
 {
-    [Route("/")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -41,7 +40,8 @@ namespace Foundry.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction("SearchCard");
+            BaseViewModel model = new BaseViewModel(_configuration);
+            return View(model);
         }
 
         [HttpGet]
@@ -136,6 +136,7 @@ namespace Foundry.Controllers
             return View(model);
         }
 
+        [Route("error")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
