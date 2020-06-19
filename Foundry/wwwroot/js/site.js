@@ -4,16 +4,21 @@
 // Write your JavaScript code.
 
 // Searching
-$('#searchCardByName').click(searchMetacard);
+$('#searchCardByName').on('click touchend submit', searchMetacard);
 
 function searchMetacard(resultsContainerId) {
     var cardNameStartingWith = encodeURIComponent($('#cardName').val());
+
+    var spinner = "<span id='search-spinner' class='spinner-border spinner-border-sm search-spinner' role='status' aria-hidden='true'></span>" +
+        "<span class='sr-only search-spinner'>Loading...</span>";
+    $('#searchCardByName').append(spinner);
 
     $.ajax({
         type: "GET",
         dataType: "json",
         url: encodeURI("/api/metacard/byNameStart?substring=" + cardNameStartingWith),
         success: function (data) {
+            $('.search-spinner').remove();
             if (data != null && data.length > 0) {
                 var html = "";
                 $.each(data, function (key, value) {
@@ -27,6 +32,7 @@ function searchMetacard(resultsContainerId) {
             }
         },
         error: function (xhr, status) {
+            $('.search-spinner').remove();
             console.log(status);
         }
     });

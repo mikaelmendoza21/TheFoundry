@@ -93,7 +93,7 @@ namespace Foundry.Controllers.Api
         [Route("deleteCardCopy")]
         public JsonResult DeleteCardConstruct(string constructId)
         {
-            CardConstruct cardConstruct = _cardConstructAccessor.GetCardConstruct(constructId);
+            CardConstruct cardConstruct = _cardConstructAccessor.GetCardInCollection(constructId);
             if (cardConstruct == null)
             {
                 return Json(new
