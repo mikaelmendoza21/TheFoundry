@@ -5,6 +5,7 @@ using System.Text;
 using System.Linq;
 using MtgApiManager.Lib.Core;
 using ChiefOfTheFoundry.Models;
+using MtgApiManager.Lib.Model;
 
 namespace ChiefOfTheFoundry.MtgApi
 {
@@ -32,6 +33,23 @@ namespace ChiefOfTheFoundry.MtgApi
 
             if (result.IsSuccess && result.Value.Count > 0)
                 return result.Value;
+
+            return null;
+        }
+
+        public static List<MtgApiManager.Lib.Model.Set> GetAllSetsSinceDate(DateTime releaseDate)
+        {
+            SetService service = new SetService();
+
+            Exceptional<List<MtgApiManager.Lib.Model.Set>> result = service.All();
+
+
+            if (result.IsSuccess && result.Value.Count > 0)
+            {
+                return result.Value
+                    .Where(s => DateTime.Parse(s.ReleaseDate) > releaseDate)
+                    .ToList();
+            }
 
             return null;
         }

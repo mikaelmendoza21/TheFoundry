@@ -10,6 +10,7 @@ namespace ChiefOfTheFoundry.DataAccess
     {
         MtgSet GetMTGSetByName(string name);
         MtgSet GetMTGSetById(string id);
+        MtgSet GetLatestReleasedSet();
         IEnumerable<MtgSet> GetMtgSets(FilterDefinition<MtgSet> filter);
         MtgSet Create(MtgSet set);
         void Update(string id, MtgSet setIn);
@@ -42,6 +43,13 @@ namespace ChiefOfTheFoundry.DataAccess
             .FirstOrDefault();
         }
 
+        public MtgSet GetLatestReleasedSet()
+        {
+            return _sets.
+                Find<MtgSet>(Builders<MtgSet>.Filter.Empty)
+                .SortByDescending(s => s.ReleaseDate)
+                .FirstOrDefault();
+        }
         public IEnumerable<MtgSet> GetMtgSets(FilterDefinition<MtgSet> filter)
         {
             return _sets

@@ -52,5 +52,21 @@ namespace ChiefOfTheFoundry.MtgApi
 
             return null;
         }
+
+        public static List<MtgApiManager.Lib.Model.Card> GetNextHundredCardsInSet(string setName, int pageNumber = 0)
+        {
+            CardService service = new CardService();
+
+            Exceptional<List<MtgApiManager.Lib.Model.Card>> result = service
+                .Where(cards => cards.SetName, setName)
+                .Where(cards => cards.Page, pageNumber)
+                .Where(cards => cards.PageSize, DefaultPageSize)
+                .All();
+
+            if (result.IsSuccess && result.Value.Count > 0)
+                return result.Value;
+
+            return null;
+        }
     }
 }

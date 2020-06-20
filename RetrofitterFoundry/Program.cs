@@ -1,9 +1,11 @@
 ﻿using ChiefOfTheFoundry.DataAccess;
 using ChiefOfTheFoundry.Models;
 using ChiefOfTheFoundry.MtgApi;
+using MongoDB.Driver;
 using MtgApiManager.Lib.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RetrofitterFoundry
 {
@@ -16,6 +18,10 @@ namespace RetrofitterFoundry
         private const string MetaCardsCollection = "MetaCards";
         private const string CardsCollection = "Cards";
 
+        /// <summary>
+        /// Takes a Single argument [0] = 'true' if doing a whole Seed operation. Else performs an update 
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             Console.WriteLine("You've casted Retrofitter Foundry");
@@ -24,84 +30,13 @@ namespace RetrofitterFoundry
 
             try
             {
-                int startPage = 1;
-                if (args.Length > 0)
-                    startPage = Int32.Parse(args[0]);
-
-                // Seed Sets
-                SeedSetsDatabase();
-
-                // Seed Cards
-                SeedCardDatabase(startPage);
-            }
-            catch (Exception e)
-            {
-                logger.Error($"Retrofitter Foundry was terminated. Error = {e.Message}");
-            }
-
-            Console.WriteLine($"Retrofitter Foundry left the field. {DateTime.Now.TimeOfDay}");
-            logger.Info("Retrofitter Foundry left the field.");
-        }
-
-        private static void SeedSetsDatabase()
-        {
-            string setInProgress = string.Empty;
-
-            try
-            {
-                CollectionDbSettings dbSettings = new CollectionDbSettings()
-                {
-                    CollectionName = SetsCollection,
-                    ConnectionString = ConnString,
-                    DatabaseName = DbName
-                };
-                MtgSetAccessor service = new MtgSetAccessor(dbSettings);
-
-                logger.Info("Retrofitter Foundry started process: SeedSetsDatabase");
-                Console.WriteLine("Retrofitter Foundry started process: SeedSetsDatabase");
-
-                List<MtgApiManager.Lib.Model.Set> sets = SetFinder.GetAllSets();
-                Console.WriteLine($"Retrofitter Foundry found {sets.Count}");
-
-                foreach (Set currentSet in sets)
-                {
-                    if (service.GetMTGSetByName(currentSet.Name) != null)
-                        continue; // Skip set if it exists
-
-                    setInProgress = currentSet.Name;
-                    MtgSet set = new MtgSet(currentSet);
-
-                    if (currentSet.OnlineOnly.HasValue && currentSet.OnlineOnly.Value)
-                        continue; // Skip online-only sets
-
-                    service.Create(set);
-                }
-
-                Console.WriteLine("Retrofitter Foundry finished process: SeedSetsDatabase");
-                logger.Info("Retrofitter Foundry finished process: SeedSetsDatabase");
-            }
-            catch (Exception e)
-            {
-                logger.Error(e, $"[SeedSetDatabase] An error occurred. [SetInProgress={setInProgress}] Error Message: {e.Message}");
-                logger.Error(e, $"[SeedSetDatabase] Trace: {e.StackTrace}");
-            }
-        }
-
-        private static void SeedCardDatabase(int page = 1)
-        {
-            int waitTimeInSeconds = 15;
-            try
-            {
-                logger.Info("Retrofitter Foundry started process: SeedMetaCardDatabase");
-                Console.WriteLine("Retrofitter Foundry started process: SeedMetaCardDatabase");
-
                 CollectionDbSettings metaCardsDbSettings = new CollectionDbSettings()
                 {
                     CollectionName = MetaCardsCollection,
                     ConnectionString = ConnString,
                     DatabaseName = DbName
                 };
-                MetaCardAccessor metaService = new MetaCardAccessor(metaCardsDbSettings);
+                MetaCardAccessor metaCardAccessor = new MetaCardAccessor(metaCardsDbSettings);
 
                 CollectionDbSettings setDbSettings = new CollectionDbSettings()
                 {
@@ -109,7 +44,7 @@ namespace RetrofitterFoundry
                     ConnectionString = ConnString,
                     DatabaseName = DbName
                 };
-                MtgSetAccessor setService = new MtgSetAccessor(setDbSettings);
+                MtgSetAccessor setAccessor = new MtgSetAccessor(setDbSettings);
 
                 CollectionDbSettings cardDbSettings = new CollectionDbSettings()
                 {
@@ -117,7 +52,74 @@ namespace RetrofitterFoundry
                     ConnectionString = ConnString,
                     DatabaseName = DbName
                 };
-                MtgCardAccessor cardService = new MtgCardAccessor(cardDbSettings);
+                MtgCardAccessor mtgCardAccessor = new MtgCardAccessor(cardDbSettings);
+
+                // Seed Sets
+                bool isSeed = false;
+                if (args.Length > 0)
+                {
+                    bool.TryParse(args[0], out isSeed);
+                }
+
+                // Get Sets
+                SeedSetsDatabase(isSeed, setAccessor, metaCardAccessor, mtgCardAccessor);
+
+                // Seed Cards (only if doing full seed)
+                if (isSeed)
+                {
+                    SeedCardDatabase(metaCardAccessor, setAccessor, mtgCardAccessor);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Retrofitter Foundry was terminated. Error = {e.Message}");
+            }
+
+            Console.WriteLine($"Retrofitter Foundry left the field. Press any key to end.");
+            Console.ReadLine();
+            logger.Info("Retrofitter Foundry left the field.");
+        }
+
+        private static void SeedSetsDatabase(bool isSeed, MtgSetAccessor setAccessor, MetaCardAccessor metaCardAccessor, MtgCardAccessor mtgCardAccessor)
+        {
+            try
+            {
+                logger.Info("Retrofitter Foundry started process: SeedSetsDatabase");
+                Console.WriteLine("Retrofitter Foundry started process: SeedSetsDatabase");
+
+                DateTime? startDate = null;
+                if (!isSeed)
+                {
+                    // Get latest release Date from all Sets
+                    startDate = setAccessor.GetLatestReleasedSet().ReleaseDate;
+                    Console.WriteLine($"Retrofitter Foundry => updating FoundryDb with any new data since {startDate.Value.ToShortDateString()}");
+                    logger.Info($"[RetrofitterFoundry] updating FoundryDb with any new data since {startDate.Value.ToShortDateString()}");
+                }
+                else
+                {
+                    Console.WriteLine($"Retrofitter Foundry => seeding whole datase");
+                    logger.Info($"[RetrofitterFoundry] seeding whole database");
+                }
+                MtgDataThopter.AddSetsToDb(setAccessor, metaCardAccessor, mtgCardAccessor, logger, startDate);
+
+                Console.WriteLine("Retrofitter Foundry finished process: SeedSetsDatabase");
+                logger.Info("Retrofitter Foundry finished process: SeedSetsDatabase");
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, $"[SeedSetDatabase] An error occurred. Error Message: {e.Message}");
+                logger.Error(e, $"[SeedSetDatabase] Trace: {e.StackTrace}");
+            }
+        }
+
+        private static void SeedCardDatabase(MetaCardAccessor metaCardAccessor, MtgSetAccessor setAccessor, MtgCardAccessor mtgCardAccessor)
+        {
+            int page = 1;
+            int waitTimeInSeconds = 15;
+            try
+            {
+                logger.Info("Retrofitter Foundry started process: SeedMetaCardDatabase");
+                Console.WriteLine("Retrofitter Foundry started process: SeedMetaCardDatabase");
 
                 List<Card> cards = CardFinder.GetNextHundredCards(page);
 
@@ -125,33 +127,17 @@ namespace RetrofitterFoundry
                 {
                     System.Threading.Thread.Sleep(waitTimeInSeconds * 1000);
 
+                    MtgSet set = null;
                     foreach (Card currentCard in cards)
                     {
-                        MtgSet set = setService.GetMTGSetByName(currentCard.SetName);
+                        if (set == null || set.Name != currentCard.SetName)
+                        {
+                            set = setAccessor.GetMTGSetByName(currentCard.SetName);
+                        }
 
                         if (set != null)
                         {
-                            MetaCard existingMetaCard = metaService.GetMetaCardByName(currentCard.Name);
-                            if (existingMetaCard != null &&
-                                existingMetaCard.SetIDs != null &&
-                                !existingMetaCard.SetIDs.Contains(set.Id))
-                            {
-                                // Update MetaCard with SetId reference
-                                existingMetaCard.SetIDs.Add(set.Id);
-                                metaService.Update(existingMetaCard);
-                            }
-                            else if (existingMetaCard == null)
-                            {
-                                // Add MetaCard to Db
-                                MetaCard newMetaCard = new MetaCard(currentCard, new List<string>() { set.Id });
-                                existingMetaCard = metaService.Create(newMetaCard);
-                            }
-
-                            MtgCard card = new MtgCard(currentCard, set.Id)
-                            {
-                                MetaCardID = existingMetaCard.Id
-                            };
-                            cardService.Create(card);
+                            MtgDataThopter.AddCard(metaCardAccessor, mtgCardAccessor, set, currentCard);
                         }
                         // else - don't add 'onlineOnly' set cards
                     }

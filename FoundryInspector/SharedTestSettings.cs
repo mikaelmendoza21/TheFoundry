@@ -30,5 +30,16 @@ namespace FoundryInspector
             };
             return new MetaCardAccessor(metaCardsDbSettings);
         }
+
+        public static MtgSetAccessor GetMtgSetAccessor()
+        {
+            CollectionDbSettings setDbSettings = new CollectionDbSettings()
+            {
+                CollectionName = SharedTestSettings.SET_COLLECTION,
+                ConnectionString = SharedTestSettings.CONN_STRING,
+                DatabaseName = SharedTestSettings.DB_NAME
+            };
+            return new MtgSetAccessor(setDbSettings);
+        }
     }
 }
