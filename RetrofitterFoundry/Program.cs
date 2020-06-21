@@ -1,6 +1,7 @@
 ﻿using ChiefOfTheFoundry.DataAccess;
 using ChiefOfTheFoundry.Models;
 using ChiefOfTheFoundry.MtgApi;
+using Microsoft.Extensions.CommandLineUtils;
 using MongoDB.Driver;
 using MtgApiManager.Lib.Model;
 using System;
@@ -19,65 +20,93 @@ namespace RetrofitterFoundry
         private const string CardsCollection = "Cards";
 
         /// <summary>
-        /// Takes a Single argument [0] = 'true' if doing a whole Seed operation. Else performs an update 
+        /// Accepts optional argument '--seed' or '-s' to seed whole database.
         /// </summary>
-        /// <param name="args"></param>
         static void Main(string[] args)
         {
-            Console.WriteLine("You've casted Retrofitter Foundry");
-            Console.WriteLine("This will populate your local database with MetaCard data");
-            logger.Info($"Retroffiter Foundry Started at {DateTime.Now.TimeOfDay}");
+            var app = new CommandLineApplication();
+
+            // This should be the name of the executable itself.
+            // the help text line "Usage: ConsoleArgs" uses this
+            app.Name = "RetroffiterFoundry";
+
+            var isSeedOption = app.Option("-s|--seed",
+                    "Some option value",
+                    CommandOptionType.NoValue);
+
+            app.OnExecute(() =>
+            {
+                Console.WriteLine("You've casted Retrofitter Foundry");
+                Console.WriteLine("This will populate your local database with MetaCard data");
+                logger.Info($"Retroffiter Foundry Started at {DateTime.Now.TimeOfDay}");
+
+                try
+                {
+                    // Seed Sets
+                    bool isSeed = isSeedOption.HasValue();
+
+                    CollectionDbSettings metaCardsDbSettings = new CollectionDbSettings()
+                    {
+                        CollectionName = MetaCardsCollection,
+                        ConnectionString = ConnString,
+                        DatabaseName = DbName
+                    };
+                    MetaCardAccessor metaCardAccessor = new MetaCardAccessor(metaCardsDbSettings);
+
+                    CollectionDbSettings setDbSettings = new CollectionDbSettings()
+                    {
+                        CollectionName = SetsCollection,
+                        ConnectionString = ConnString,
+                        DatabaseName = DbName
+                    };
+                    MtgSetAccessor setAccessor = new MtgSetAccessor(setDbSettings);
+
+                    CollectionDbSettings cardDbSettings = new CollectionDbSettings()
+                    {
+                        CollectionName = CardsCollection,
+                        ConnectionString = ConnString,
+                        DatabaseName = DbName
+                    };
+                    MtgCardAccessor mtgCardAccessor = new MtgCardAccessor(cardDbSettings);
+
+                    // Get Sets
+                    SeedSetsDatabase(isSeed, setAccessor, metaCardAccessor, mtgCardAccessor);
+
+                    // Seed Cards (only if doing full seed)
+                    if (isSeed)
+                    {
+                        SeedCardDatabase(metaCardAccessor, setAccessor, mtgCardAccessor);
+                    }
+                }
+                catch (Exception e)
+                {
+                    logger.Error($"Retrofitter Foundry was terminated. Error = {e.Message}");
+                }
+
+                Console.WriteLine($"Retrofitter Foundry left the field. Press any key to end.");
+                Console.ReadLine();
+                logger.Info("Retrofitter Foundry left the field.");
+
+                return 0;
+            });
 
             try
             {
-                CollectionDbSettings metaCardsDbSettings = new CollectionDbSettings()
-                {
-                    CollectionName = MetaCardsCollection,
-                    ConnectionString = ConnString,
-                    DatabaseName = DbName
-                };
-                MetaCardAccessor metaCardAccessor = new MetaCardAccessor(metaCardsDbSettings);
-
-                CollectionDbSettings setDbSettings = new CollectionDbSettings()
-                {
-                    CollectionName = SetsCollection,
-                    ConnectionString = ConnString,
-                    DatabaseName = DbName
-                };
-                MtgSetAccessor setAccessor = new MtgSetAccessor(setDbSettings);
-
-                CollectionDbSettings cardDbSettings = new CollectionDbSettings()
-                {
-                    CollectionName = CardsCollection,
-                    ConnectionString = ConnString,
-                    DatabaseName = DbName
-                };
-                MtgCardAccessor mtgCardAccessor = new MtgCardAccessor(cardDbSettings);
-
-                // Seed Sets
-                bool isSeed = false;
-                if (args.Length > 0)
-                {
-                    bool.TryParse(args[0], out isSeed);
-                }
-
-                // Get Sets
-                SeedSetsDatabase(isSeed, setAccessor, metaCardAccessor, mtgCardAccessor);
-
-                // Seed Cards (only if doing full seed)
-                if (isSeed)
-                {
-                    SeedCardDatabase(metaCardAccessor, setAccessor, mtgCardAccessor);
-                }
+                // This begins the actual execution of the application
+                Console.WriteLine("ConsoleArgs app executing...");
+                app.Execute(args);
             }
-            catch (Exception e)
+            catch (CommandParsingException ex)
             {
-                logger.Error($"Retrofitter Foundry was terminated. Error = {e.Message}");
+                // You'll always want to catch this exception, otherwise it will generate a messy and confusing error for the end user.
+                // the message will usually be something like:
+                // "Unrecognized command or argument '<invalid-command>'"
+                Console.WriteLine(ex.Message);
             }
-
-            Console.WriteLine($"Retrofitter Foundry left the field. Press any key to end.");
-            Console.ReadLine();
-            logger.Info("Retrofitter Foundry left the field.");
+            catch (Exception ex)
+            {
+                Console.WriteLine("Unable to execute application: {0}", ex.Message);
+            }
         }
 
         private static void SeedSetsDatabase(bool isSeed, MtgSetAccessor setAccessor, MetaCardAccessor metaCardAccessor, MtgCardAccessor mtgCardAccessor)
