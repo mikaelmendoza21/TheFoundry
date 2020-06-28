@@ -5,7 +5,7 @@ $('#searchCardInCollection').on('click touchend submit', function () {
 });
 
 function searchMetacardInCollection(resultsContainerId) {
-    var cardNameStartingWith = encodeURIComponent($('#cardNameInCollection').val());
+    var cardNameStartingWith = $('#cardNameInCollection').val();
     var spinner = "<span id='search-spinner' class='spinner-border spinner-border-sm search-spinner' role='status' aria-hidden='true'></span>" +
         "<span class='sr-only search-spinner'>Loading...</span>";
     $('#searchCardInCollection').append(spinner);
@@ -13,14 +13,17 @@ function searchMetacardInCollection(resultsContainerId) {
     $.ajax({
         type: "GET",
         dataType: "json",
-        url: encodeURI("/api/metacard/byNameStart?substring=" + cardNameStartingWith),
+        url: "/api/metacard/byNameStart?substring=" + encodeURIComponent(cardNameStartingWith),
         success: function (data) {
             $('.search-spinner').remove();
             if (data != null && data.length > 0) {
                 var html = "";
                 $.each(data, function (key, value) {
                     var cardName = encodeURIComponent(value.name);
-                    html += "<li class='spaced'><div><a class='text-md' href=\"/collection/copiesInCollection?metacardId=" + value.id + "\">" + value.name + "</a></div></li>";
+                    html += "<li class='spaced'>" +
+                        "<div>" +
+                        "<a class='text-md' href=\"/collection/copiesInCollection?metacardId=" + value.id + "\">" + value.name + "</a>" +
+                        "</div></li>";
                 });
                 $("#searchMetacardInCollectionResults").html("<div>" + html + "</div>");
             }
@@ -66,15 +69,20 @@ $(document).ready(function () {
                             $currentCardGroup = $(".mtgCardGroup[data-mtgcard-id='" + currentMtgCardId + "']");
                         }
 
-                        var deckId = (value.deckId != "") ? value.deckId : "None";
+                        var deckHtml = (value.deckId != null && value.deckId != "") ? "<span class='spaced'>Deck:" + value.deckId + "</span>" : "";
+                        var notesHtml = (value.notes != null && value.notes != "") ? "<span class='spaced'><em>Notes:</em> " + value.notes + "</span>" : "";
                         $currentCardGroup.find(".copiesContainer")
                             .append("<li class='row spaced' data-construct-id='" + value.id + "'>" +
-                                    "<span class='pad-right'>" +
-                                        "<p>Card copy - Deck: " + deckId + "</p>" +
-                                    "</span>" +
-                                    "<span>" +
-                                        "<input type='button' class='btn btn-secondary pad-left' onclick='deleteCardConstruct(\"" + value.id + "\")' data-cardConstruct-id='" + value.id + "' value='Delete' />" +
-                                    "</span>" +
+                                    "<div>" + 
+                                        "<span class='pad-right'>" +
+                                            "<p>Card copy</p>" +
+                                        "</span>" +
+                                        "<span class='spaced'>" +
+                                            "<input type='button' class='btn btn-secondary pad-left' onclick='deleteCardConstruct(\"" + value.id + "\")' data-cardConstruct-id='" + value.id + "' value='Delete' />" +
+                                        "</span>" +
+                                        deckHtml + 
+                                        notesHtml +
+                                    "</div>" +
                                     "</li><hr />");
                         currentMtgCardCount++;
 

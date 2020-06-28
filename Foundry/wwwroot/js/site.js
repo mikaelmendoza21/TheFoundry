@@ -16,7 +16,7 @@ function searchMetacard(resultsContainerId) {
     $.ajax({
         type: "GET",
         dataType: "json",
-        url: encodeURI("/api/metacard/byNameStart?substring=" + cardNameStartingWith),
+        url: "/api/metacard/byNameStart?substring=" + cardNameStartingWith,
         success: function (data) {
             $('.search-spinner').remove();
             if (data != null && data.length > 0) {
@@ -44,6 +44,7 @@ $('#addCardToCollection').click(createCardCopies);
 function createCardCopies() {
     var mtgCardId = $('#mtgCardId').val();
     var numberOfCopies = $('#numberOfCopies').val();
+    var notes = $('#notes').val();
 
-    window.location.replace("/addCopies?mtgCardId=" + mtgCardId + "&numberOfCopies=" + numberOfCopies);
+    window.location.replace("/addCopies?mtgCardId=" + mtgCardId + "&numberOfCopies=" + numberOfCopies + "&notes=" + encodeURIComponent(notes));
 }

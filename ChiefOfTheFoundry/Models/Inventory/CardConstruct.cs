@@ -24,8 +24,10 @@ namespace ChiefOfTheFoundry.Models.Inventory
         {
             MetaCardId = metaCardId;
             MtgCardId = mtgCardId;
-            DeckId = deckId;
-            Notes = notes;
+            if (!string.IsNullOrEmpty(deckId))
+                DeckId = deckId;
+            if (!string.IsNullOrEmpty(notes))
+                Notes = notes;
         }
 
         public CardConstruct(MtgCard mtgCard, string deckId = "", string notes = "")

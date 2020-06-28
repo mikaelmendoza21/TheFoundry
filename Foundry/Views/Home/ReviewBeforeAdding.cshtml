@@ -12,7 +12,8 @@
             <p>@card.Text</p>
             <label for="numberOfCopies">Card Copies</label>
             <input id="mtgCardId" name="mtgCardId" type="hidden" value="@card.Id" />
-            <input type="number" class="form-control" id="numberOfCopies" placeholder="Number of copies..">
+            <input type="number" class="form-control spaced col-lg-4" id="numberOfCopies" placeholder="Number of copies..">
+            <input type="text" class="form-control spaced" id="notes" placeholder="Notes.." />
         </div>
         <button id="addCardToCollection" type="submit" class="btn btn-primary">Submit</button>
     </div>

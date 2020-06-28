@@ -113,7 +113,7 @@ namespace Foundry.Controllers
 
         [HttpGet]
         [Route("addCopies")]
-        public IActionResult AddCardCopies(string mtgCardId, int numberOfCopies = 1)
+        public IActionResult AddCardCopies(string mtgCardId, int numberOfCopies = 1, string notes = "")
         {
             if (string.IsNullOrEmpty(mtgCardId) || numberOfCopies < 1)
             {
@@ -127,7 +127,7 @@ namespace Foundry.Controllers
             }
             
             CardConstruct cardConstruct = new CardConstruct(mtgCard);
-            _cardManagerService.CreateCopiesFromConstruct(cardConstruct, numberOfCopies);
+            _cardManagerService.CreateCopiesFromConstruct(cardConstruct, numberOfCopies, notes);
             
             ViewBag.Card = mtgCard;
             ViewBag.NumberOfCopies = numberOfCopies;

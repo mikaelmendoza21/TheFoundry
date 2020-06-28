@@ -43,7 +43,7 @@ namespace Foundry.Controllers.Api
 
         [HttpPost]
         [Route("addCardConstructs")]
-        public JsonResult AddCardCopies(string mtgCardId, int numberOfCopies = 1)
+        public JsonResult AddCardCopies(string mtgCardId, int numberOfCopies = 1, string notes = "")
         {
             if (string.IsNullOrEmpty(mtgCardId) || numberOfCopies < 1)
             {
@@ -63,7 +63,7 @@ namespace Foundry.Controllers.Api
             }
 
             CardConstruct cardConstruct = new CardConstruct(mtgCard);
-            List<CardConstruct> createdConstructs = _cardManagerService.CreateCopiesFromConstruct(cardConstruct, numberOfCopies);
+            List<CardConstruct> createdConstructs = _cardManagerService.CreateCopiesFromConstruct(cardConstruct, numberOfCopies, notes);
 
             return Json(createdConstructs);
         }

@@ -18,7 +18,7 @@ namespace ChiefOfTheFoundry.Services
         IEnumerable<MtgCard> GetMtgCardsByMetacardId(string metacardId);
         IEnumerable<CardConstruct> GetCardConstructsFromMetacardId(string metacardId);
         MtgCard GetMtgCardByMetacardAndSet(string metacardId, string setId);
-        List<CardConstruct> CreateCopiesFromConstruct(CardConstruct cardConstruct, int numberOfCopies);
+        List<CardConstruct> CreateCopiesFromConstruct(CardConstruct cardConstruct, int numberOfCopies, string notes);
     }
 
     public class CardManagerService : ICardManagerService
@@ -83,9 +83,10 @@ namespace ChiefOfTheFoundry.Services
             return _cardConstructAccesor.GetCardConstructs(filter);
         }
 
-        public List<CardConstruct> CreateCopiesFromConstruct(CardConstruct cardConstruct, int numberOfCopies)
+        public List<CardConstruct> CreateCopiesFromConstruct(CardConstruct cardConstruct, int numberOfCopies, string notes)
         {
-            return _cardConstructAccesor.CreateMultipleCopies(cardConstruct, numberOfCopies);
+            // TODO: Allow setting deckId here
+            return _cardConstructAccesor.CreateMultipleCopies(cardConstruct, numberOfCopies, null, notes);
         }
     }
 }
