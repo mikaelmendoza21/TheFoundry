@@ -38,7 +38,7 @@ namespace FoundryApi.Api.Controllers
         {
             try
             {
-                return _metaCardAccessor.GetMetaCardByName(cardName);
+                return _metaCardAccessor.GetMetaCardByName(cardName.Trim());
             }
             catch (Exception e)
             {
@@ -65,7 +65,7 @@ namespace FoundryApi.Api.Controllers
         [Route("byNameStart")]
         public JsonResult GetMetacardsByNameStart(string substring)
         {
-            IEnumerable<MetaCard> matches = _cardManagerService.GetMetaCardsByNameBeginning(substring);
+            IEnumerable<MetaCard> matches = _cardManagerService.GetMetaCardsByNameBeginning(substring.Trim());
             if (matches.Count() > 0)
             {
                 return Json(matches.ToList());
@@ -80,7 +80,7 @@ namespace FoundryApi.Api.Controllers
         [Route("byNameStartLite")]
         public IActionResult GetMetacardsByNameStartLite(string substring)
         {
-            IEnumerable<MetaCard> matches = _cardManagerService.GetMetaCardsByNameBeginning(substring);
+            IEnumerable<MetaCard> matches = _cardManagerService.GetMetaCardsByNameBeginning(substring.Trim());
             if (matches.Count() > 0)
             {
                 return Json(matches

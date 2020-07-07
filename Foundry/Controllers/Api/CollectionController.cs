@@ -43,7 +43,7 @@ namespace Foundry.Controllers.Api
 
         [HttpPost]
         [Route("addCardConstructs")]
-        public JsonResult AddCardCopies(string mtgCardId, int numberOfCopies = 1, string notes = "")
+        public JsonResult AddCardCopies(string mtgCardId, bool isFoil, int numberOfCopies = 1, string notes = "")
         {
             if (string.IsNullOrEmpty(mtgCardId) || numberOfCopies < 1)
             {
@@ -63,7 +63,7 @@ namespace Foundry.Controllers.Api
             }
 
             CardConstruct cardConstruct = new CardConstruct(mtgCard);
-            List<CardConstruct> createdConstructs = _cardManagerService.CreateCopiesFromConstruct(cardConstruct, numberOfCopies, notes);
+            List<CardConstruct> createdConstructs = _cardManagerService.CreateCopiesFromConstruct(cardConstruct, numberOfCopies, notes, isFoil);
 
             return Json(createdConstructs);
         }
@@ -87,6 +87,50 @@ namespace Foundry.Controllers.Api
             }
 
             return Json(cardConstructs.OrderBy(c => c.MtgCardId));
+        }
+
+        [HttpPost]
+        [Route("markAsFoil")]
+        public JsonResult MarkCardConstructAsFoil(string constructId)
+        {
+            CardConstruct cardConstruct = _cardConstructAccessor.GetCardInCollection(constructId);
+            if (cardConstruct == null)
+            {
+                return Json(new
+                {
+                    Error = "CardConstruct not found."
+                });
+            }
+
+            cardConstruct.IsFoil = true;
+            _cardConstructAccessor.Update(cardConstruct);
+
+            return Json(new
+            {
+                Success = true
+            });
+        }
+
+        [HttpPost]
+        [Route("unmarkAsFoil")]
+        public JsonResult UnmarkCardConstructAsFoil(string constructId)
+        {
+            CardConstruct cardConstruct = _cardConstructAccessor.GetCardInCollection(constructId);
+            if (cardConstruct == null)
+            {
+                return Json(new
+                {
+                    Error = "CardConstruct not found."
+                });
+            }
+
+            cardConstruct.IsFoil = false;
+            _cardConstructAccessor.Update(cardConstruct);
+
+            return Json(new
+            {
+                Success = true
+            });
         }
 
         [HttpDelete]

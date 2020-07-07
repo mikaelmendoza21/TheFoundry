@@ -77,6 +77,16 @@ namespace Foundry.Controllers
                 return BadRequest($"No sets found for card {cardName}");
             }
 
+            if (sets.Count() == 1)
+            {
+                return RedirectToAction("ReviewBeforeAdding", new 
+                {
+                    metacardId = metaCard.Id,
+                    setId = sets.First().Id,
+                    cardName = cardName
+                });
+            }
+
             ViewBag.Sets = sets.ToList();
             ViewBag.MetacardId = metaCard.Id;
             ViewBag.CardName = metaCard.Name;
@@ -113,7 +123,7 @@ namespace Foundry.Controllers
 
         [HttpGet]
         [Route("addCopies")]
-        public IActionResult AddCardCopies(string mtgCardId, int numberOfCopies = 1, string notes = "")
+        public IActionResult AddCardCopies(string mtgCardId, int numberOfCopies = 1, string notes = "", bool isFoil = false)
         {
             if (string.IsNullOrEmpty(mtgCardId) || numberOfCopies < 1)
             {
@@ -127,7 +137,7 @@ namespace Foundry.Controllers
             }
             
             CardConstruct cardConstruct = new CardConstruct(mtgCard);
-            _cardManagerService.CreateCopiesFromConstruct(cardConstruct, numberOfCopies, notes);
+            _cardManagerService.CreateCopiesFromConstruct(cardConstruct, numberOfCopies, notes, isFoil);
             
             ViewBag.Card = mtgCard;
             ViewBag.NumberOfCopies = numberOfCopies;

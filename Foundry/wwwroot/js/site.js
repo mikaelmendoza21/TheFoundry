@@ -2,6 +2,16 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+$(document).ready(function () {
+    if ($('.card-search-input').length > 0) {
+        $('.card-search-input').focus();
+        $('.card-search-input').keypress(function (e) {
+            if (e.which == 13) {
+                $('.submit-search').click();
+            }
+        });
+    }
+});
 
 // Searching
 $('#searchCardByName').on('click touchend submit', searchMetacard);
@@ -44,7 +54,8 @@ $('#addCardToCollection').click(createCardCopies);
 function createCardCopies() {
     var mtgCardId = $('#mtgCardId').val();
     var numberOfCopies = $('#numberOfCopies').val();
+    var isFoil = $('#isFoil').checked;
     var notes = $('#notes').val();
 
-    window.location.replace("/addCopies?mtgCardId=" + mtgCardId + "&numberOfCopies=" + numberOfCopies + "&notes=" + encodeURIComponent(notes));
+    window.location.replace("/addCopies?mtgCardId=" + mtgCardId + "&numberOfCopies=" + numberOfCopies + "&notes=" + encodeURIComponent(notes) + "&isFoil=" + isFoil);
 }

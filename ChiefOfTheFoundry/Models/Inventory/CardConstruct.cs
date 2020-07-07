@@ -19,8 +19,9 @@ namespace ChiefOfTheFoundry.Models.Inventory
         public string MtgCardId { get; set; }
         public string DeckId { get; set; }
         public string Notes { get; set; }
+        public bool IsFoil { get; set; }
 
-        public CardConstruct(string metaCardId, string mtgCardId, string deckId = "", string notes = "")
+        public CardConstruct(string metaCardId, string mtgCardId, bool isFoil, string deckId = "", string notes = "")
         {
             MetaCardId = metaCardId;
             MtgCardId = mtgCardId;
@@ -28,6 +29,7 @@ namespace ChiefOfTheFoundry.Models.Inventory
                 DeckId = deckId;
             if (!string.IsNullOrEmpty(notes))
                 Notes = notes;
+            IsFoil = isFoil;
         }
 
         public CardConstruct(MtgCard mtgCard, string deckId = "", string notes = "")

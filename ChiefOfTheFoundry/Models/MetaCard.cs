@@ -11,7 +11,7 @@ namespace ChiefOfTheFoundry.Models
     /// </summary>
     public class MetaCard : MasterMtgCard
     {
-        private static Uri DefaultImage = new Uri("https://www.pcgamesn.com/wp-content/uploads/2019/06/mtg-arena-core-set-2020.jpg");
+        private static Uri DefaultImage = new Uri("/mtg-card-back.jpg");
 
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

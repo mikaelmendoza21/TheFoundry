@@ -14,7 +14,7 @@ namespace ChiefOfTheFoundry.DataAccess
         List<CardConstruct> GetCardCopies(string mtgCardId);
         IEnumerable<CardConstruct> GetCardConstructs(FilterDefinition<CardConstruct> filter);
         CardConstruct Create(CardConstruct construct);
-        List<CardConstruct> CreateMultipleCopies(CardConstruct construct, int numberOfCopies, string deckId, string notes);
+        List<CardConstruct> CreateMultipleCopies(CardConstruct construct, int numberOfCopies, string deckId, string notes, bool isFoil);
         void Update(CardConstruct constructIn);
         void Delete(CardConstruct construct);
         void Delete(string id);
@@ -69,12 +69,12 @@ namespace ChiefOfTheFoundry.DataAccess
             return construct;
         }
 
-        public List<CardConstruct> CreateMultipleCopies(CardConstruct construct, int numberOfCopies, string deckId, string notes)
+        public List<CardConstruct> CreateMultipleCopies(CardConstruct construct, int numberOfCopies, string deckId, string notes, bool isFoil)
         {
             List<CardConstruct> allCopies = new List<CardConstruct>();
             for (int i = 0; i < numberOfCopies; i++)
             {
-                CardConstruct clone = new CardConstruct(construct.MetaCardId, construct.MtgCardId, deckId: deckId, notes: notes);
+                CardConstruct clone = new CardConstruct(construct.MetaCardId, construct.MtgCardId, deckId: deckId, notes: notes, isFoil: isFoil);
                 allCopies.Add(clone);
             }
 
