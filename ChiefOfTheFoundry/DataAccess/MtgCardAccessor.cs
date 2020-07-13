@@ -4,6 +4,7 @@ using NLog.Filters;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace ChiefOfTheFoundry.DataAccess
 {
@@ -12,7 +13,7 @@ namespace ChiefOfTheFoundry.DataAccess
         MtgCard GetMtgCardByName(string name, string setId);
         MtgCard GetMtgCardById(string id);
         MtgCard GetMtgCard(FilterDefinition<MtgCard> filter);
-        IEnumerable<MtgCard> GetMtgCards(FilterDefinition<MtgCard> filter);
+        List<MtgCard> GetMtgCards(FilterDefinition<MtgCard> filter);
         MtgCard Create(MtgCard card);
         void Update(MtgCard cardIn);
         void Remove(MtgCard setIn);
@@ -51,11 +52,12 @@ namespace ChiefOfTheFoundry.DataAccess
                 .FirstOrDefault();
         }
 
-        public IEnumerable<MtgCard> GetMtgCards(FilterDefinition<MtgCard> filter)
+        public List<MtgCard> GetMtgCards(FilterDefinition<MtgCard> filter)
         {
             return _cards
                 .Find(filter)
-                .ToEnumerable();
+                .ToEnumerable()
+                .ToList();
         }
         
         public MtgCard Create(MtgCard card)

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace ChiefOfTheFoundry.DataAccess
 {
@@ -12,7 +13,7 @@ namespace ChiefOfTheFoundry.DataAccess
         MetaCard GetOneMetaCard();
         MetaCard GetMetaCardById(string id);
         MetaCard GetMetaCardByName(string name);
-        IEnumerable<MetaCard> GetMetaCards(FilterDefinition<MetaCard> filter);
+        List<MetaCard> GetMetaCards(FilterDefinition<MetaCard> filter);
         Task<List<MetaCard>> GetMetaCardsAsync(FilterDefinition<MetaCard> filter);
         MetaCard Create(MetaCard card);
         void Update(MetaCard cardIn);
@@ -53,11 +54,12 @@ namespace ChiefOfTheFoundry.DataAccess
                 .FirstOrDefault();
         }
 
-        public IEnumerable<MetaCard> GetMetaCards(FilterDefinition<MetaCard> filter)
+        public List<MetaCard> GetMetaCards(FilterDefinition<MetaCard> filter)
         {
             return _metaCards
                 .Find(filter)
-                .ToEnumerable();
+                .ToEnumerable()
+                .ToList();
         }
         public async Task<List<MetaCard>> GetMetaCardsAsync(FilterDefinition<MetaCard> filter)
         {

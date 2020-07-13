@@ -12,6 +12,17 @@ namespace ChiefOfTheFoundry.MtgApi
     public static class CardFinder
     {
         public const int DefaultPageSize = 100;
+
+        public static List<MtgApiManager.Lib.Model.Card> GetAllCardVersionsByName(string name)
+        {
+            CardService service = new CardService();
+            Exceptional<List<MtgApiManager.Lib.Model.Card>> result = service
+                .Where(c => c.Name, name)
+                .All();
+
+            return result.Value;
+        }
+
         public static MetaCard FindMetaCardByName(string name)
         {
             CardService service = new CardService();

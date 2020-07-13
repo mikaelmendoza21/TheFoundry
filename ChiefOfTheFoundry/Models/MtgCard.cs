@@ -12,13 +12,11 @@ namespace ChiefOfTheFoundry.Models
     /// </summary>
     public class MtgCard : MasterMtgCard
     {
-        private static Uri DefaultImage = new Uri("https://www.pcgamesn.com/wp-content/uploads/2019/06/mtg-arena-core-set-2020.jpg");
-
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         public string MetaCardID { get; set; }
-        public Uri ImageUrl { get; set; }
+        public string ImageUrl { get; set; }
         public string SetID { get; set; }
         public List<string> Types { get; set; }
         public List<string> Colors { get; set; }
@@ -32,7 +30,7 @@ namespace ChiefOfTheFoundry.Models
             Text = cardInstance.Text;
             Type = cardInstance.Type;
             Types = cardInstance.Types?.ToList();
-            ImageUrl = cardInstance.ImageUrl ?? DefaultImage;
+            ImageUrl = cardInstance.ImageUrl.ToString() ?? MtgConstants.DefaultImageUrl;
             SetID = setID;
             Colors = cardInstance.Colors?.ToList();
             ColorIdentity = cardInstance.ColorIdentity?.ToList();

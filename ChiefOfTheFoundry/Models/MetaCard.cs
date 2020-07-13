@@ -6,17 +6,20 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace ChiefOfTheFoundry.Models
 {
+    public struct MtgConstants
+    {
+        public const string DefaultImageUrl = "/img/mtg-card-back.jpg";
+    }
+
     /// <summary>
     /// Defines a Card by name. Basic definition of a card instance, does not contain specific set, cost information.
     /// </summary>
     public class MetaCard : MasterMtgCard
     {
-        private static Uri DefaultImage = new Uri("/mtg-card-back.jpg");
-
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-        public Uri ImageUrl { get; set; }
+        public string ImageUrl { get; set; }
         public List<string> SetIDs { get; set; }
 
         /* Constructors */
@@ -26,7 +29,7 @@ namespace ChiefOfTheFoundry.Models
             ManaCost = manaCost;
             Text = text;
             Type = type;
-            ImageUrl = imageUrl ?? DefaultImage;
+            ImageUrl = imageUrl.ToString() ?? MtgConstants.DefaultImageUrl;
             SetIDs = setIDs;
         }
 
@@ -36,7 +39,7 @@ namespace ChiefOfTheFoundry.Models
             ManaCost = cardInstance.ManaCost;
             Text = cardInstance.OriginalText;
             Type = cardInstance.Type;
-            ImageUrl = cardInstance.ImageUrl ?? DefaultImage;
+            ImageUrl = cardInstance.ImageUrl.ToString() ?? MtgConstants.DefaultImageUrl;
             SetIDs = setIds;
         }
     }

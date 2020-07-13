@@ -77,10 +77,25 @@ namespace RetrofitterFoundry
                     {
                         SeedCardDatabase(metaCardAccessor, setAccessor, mtgCardAccessor);
                     }
+                    else
+                    {
+                        // Update cards with new info (if missing - example: Images Urls)
+                        try
+                        {
+                            logger.Info($"[RetrofitterFoundry] Looking for any updated data for existing cards missing info");
+                            MtgDataThopter.UpdateCards(metaCardAccessor, mtgCardAccessor, setAccessor, logger);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.Error($"[RetrofitterFoundry] An error occurred updating existing card. Error = {e.Message}");
+                            logger.Error($"Trace: {e.StackTrace}");
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
                     logger.Error($"Retrofitter Foundry was terminated. Error = {e.Message}");
+                    logger.Error($"Trace: {e.StackTrace}");
                 }
 
                 Console.WriteLine($"Retrofitter Foundry left the field. Press any key to end.");
