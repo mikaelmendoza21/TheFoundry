@@ -82,11 +82,13 @@ namespace RetrofitterFoundry
                         // Update cards with new info (if missing - example: Images Urls)
                         try
                         {
+                            Console.WriteLine($"[RetrofitterFoundry] Looking for any updated data for existing cards missing info");
                             logger.Info($"[RetrofitterFoundry] Looking for any updated data for existing cards missing info");
                             MtgDataThopter.UpdateCards(metaCardAccessor, mtgCardAccessor, setAccessor, logger);
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine($"[RetrofitterFoundry] An error occurred updating existing card. Error = {e.Message}");
                             logger.Error($"[RetrofitterFoundry] An error occurred updating existing card. Error = {e.Message}");
                             logger.Error($"Trace: {e.StackTrace}");
                         }
